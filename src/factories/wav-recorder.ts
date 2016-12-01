@@ -32,7 +32,7 @@ export class WavRecorder {
             const typedArrays = [];
 
             for (let i = 0, length = inputBuffer.numberOfChannels; i < length; i += 1) {
-                typedArrays.push(inputBuffer.getChannelData(i));
+                typedArrays.push(inputBuffer.getChannelData(i).slice(0));
             }
 
             worker.postMessage({ typedArrays }, typedArrays.map(({ buffer }) => buffer));
