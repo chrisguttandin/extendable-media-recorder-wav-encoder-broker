@@ -3,6 +3,7 @@ import { WavEncoderFactory } from './factories/wav-encoder';
 import { WavRecorderFactory } from './factories/wav-recorder';
 import { worker } from './providers/worker';
 import { ReflectiveInjector } from '@angular/core';
+import 'zone.js';
 
 export const load = (url: string) => {
     const injector = ReflectiveInjector.resolveAndCreate([
