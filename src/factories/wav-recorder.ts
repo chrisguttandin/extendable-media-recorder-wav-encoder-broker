@@ -35,7 +35,7 @@ export class WavRecorder {
                 typedArrays.push(inputBuffer.getChannelData(i));
             }
 
-            worker.postMessage({ typedArrays }, typedArrays);
+            worker.postMessage({ typedArrays }, typedArrays.map(({ buffer }) => buffer));
         };
 
         this._scriptProcessorNode.addEventListener('audioprocess', this._onAudioProcess);
