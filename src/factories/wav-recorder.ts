@@ -1,5 +1,5 @@
-import { worker } from '../providers/worker';
 import { Inject, Injectable } from '@angular/core';
+import { worker } from '../providers/worker';
 
 export class WavRecorder {
 
