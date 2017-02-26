@@ -31,7 +31,9 @@ export class WavRecorder {
         this._onAudioProcess = ({ inputBuffer }) => {
             const typedArrays = [];
 
-            for (let i = 0, length = inputBuffer.numberOfChannels; i < length; i += 1) {
+            const length = inputBuffer.numberOfChannels;
+
+            for (let i = 0; i < length; i += 1) {
                 typedArrays.push(inputBuffer.getChannelData(i).slice(0));
             }
 
