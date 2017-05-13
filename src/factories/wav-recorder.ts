@@ -1,5 +1,11 @@
 import { Inject, Injectable } from '@angular/core';
-import { IEncodeRequest, IEncodeResponse, IRecordRequest, IWorkerEvent } from 'extendable-media-recorder-wav-encoder-worker';
+import {
+    IEncodeRequest,
+    IEncodeResponse,
+    IErrorResponse,
+    IRecordRequest,
+    IWorkerEvent
+} from 'extendable-media-recorder-wav-encoder-worker';
 import { IWavRecorderFactoryOptions, IWavRecorderOptions } from '../interfaces';
 import { recordingIds } from '../providers/recording-ids';
 import { unrespondedRequests } from '../providers/unresponded-requests';
@@ -14,7 +20,7 @@ export class WavRecorder {
 
     private _onMessage: EventListener;
 
-    private _recordRequestPromiseResolve: null | Function;
+    private _recordRequestPromise: null | { reject: Function, resolve: Function };
 
     private _recordingId: number;
 
@@ -33,7 +39,7 @@ export class WavRecorder {
     constructor ({ mediaStream, uniqueIdGeneratingService, unrespondedRequests, recordingIds, worker }: IWavRecorderOptions) {
         this._audioContext = new AudioContext();
         this._worker = worker;
-        this._recordRequestPromiseResolve = null;
+        this._recordRequestPromise = null;
         this._recordingId = uniqueIdGeneratingService.generateAndAdd(recordingIds);
         this._recordingIds = recordingIds;
         this._uniqueIdGeneratingService = uniqueIdGeneratingService;
@@ -85,10 +91,12 @@ export class WavRecorder {
                 this._unrespondedRequests.delete(id);
             }
 
-            if (this._unrespondedRecordingRequests.size === 0 && this._recordRequestPromiseResolve !== null) {
-                this._requestRecording(this._recordRequestPromiseResolve);
+            if (this._unrespondedRecordingRequests.size === 0 && this._recordRequestPromise !== null) {
+                const { reject, resolve } = this._recordRequestPromise;
 
-                this._recordRequestPromiseResolve = null;
+                this._requestRecording(resolve, reject);
+
+                this._recordRequestPromise = null;
             }
         };
 
@@ -96,18 +104,24 @@ export class WavRecorder {
         this._worker.addEventListener('message', this._onMessage);
     }
 
-    private _requestRecording (resolve: Function) {
+    private _requestRecording (resolve: Function, reject: Function) {
         const id = this._uniqueIdGeneratingService.generateAndAdd(this._unrespondedRequests);
 
         const onMessage = ({ data }: IWorkerEvent) => {
             if (data.id === id) {
-                const { result: { arrayBuffer } } = <IEncodeResponse> data;
+                if (data.error === null) {
+                    const { result: { arrayBuffer } } = <IEncodeResponse> data;
 
-                this._recordingIds.delete(this._recordingId);
+                    this._recordingIds.delete(this._recordingId);
 
-                this._worker.removeEventListener('message', onMessage);
+                    this._worker.removeEventListener('message', onMessage);
 
-                resolve(arrayBuffer);
+                    resolve(arrayBuffer);
+                } else {
+                    const { error: { message } } = <IErrorResponse> data;
+
+                    reject(new Error(message));
+                }
             }
         };
 
@@ -125,11 +139,11 @@ export class WavRecorder {
         this._scriptProcessorNode.removeEventListener('audioprocess', this._onAudioProcess);
         this._audioContext.close();
 
-        return new Promise((resolve) => {
+        return new Promise((resolve, reject) => {
             if (this._unrespondedRecordingRequests.size === 0) {
-                this._requestRecording(resolve);
+                this._requestRecording(resolve, reject);
             } else {
-                this._recordRequestPromiseResolve = resolve;
+                this._recordRequestPromise = { reject, resolve };
             }
         });
     }
