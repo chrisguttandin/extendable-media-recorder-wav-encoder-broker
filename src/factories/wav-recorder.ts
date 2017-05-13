@@ -48,7 +48,7 @@ export class WavRecorder {
 
         const mediaStreamAudioSourceNode = this._audioContext.createMediaStreamSource(mediaStream);
 
-        this._scriptProcessorNode = this._audioContext.createScriptProcessor(0, 1);
+        this._scriptProcessorNode = this._audioContext.createScriptProcessor();
 
         const gainNode = this._audioContext.createGain();
 
