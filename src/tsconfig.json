@@ -2,6 +2,7 @@
   "compileOnSave": false,
   "compilerOptions": {
     "declaration": true,
+    "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "lib": [ "dom", "es2015" ],
     "module": "es2015",
