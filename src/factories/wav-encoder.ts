@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { WavRecorder, WavRecorderFactory } from './wav-recorder';
 
 export class WavEncoder {
@@ -28,7 +28,7 @@ export class WavEncoderFactory {
 
     private _wavRecorderFactory;
 
-    constructor (@Inject(WavRecorderFactory) wavRecorderFactory) {
+    constructor (wavRecorderFactory: WavRecorderFactory) {
         this._wavRecorderFactory = wavRecorderFactory;
     }
 
