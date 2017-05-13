@@ -1,5 +1,6 @@
 import { Inject, Injectable } from '@angular/core';
-import { IEncodeRequest, IRecordRequest } from 'extendable-media-recorder-wav-encoder-worker';
+import { IEncodeRequest, IEncodeResponse, IRecordRequest, IWorkerEvent } from 'extendable-media-recorder-wav-encoder-worker';
+import { IWavRecorderFactoryOptions, IWavRecorderOptions } from '../interfaces';
 import { recordingIds } from '../providers/recording-ids';
 import { unrespondedRequests } from '../providers/unresponded-requests';
 import { worker } from '../providers/worker';
@@ -7,19 +8,19 @@ import { UniqueIdGeneratingService } from '../services/unique-id-generating';
 
 export class WavRecorder {
 
-    private _audioContext;
+    private _audioContext: AudioContext;
 
-    private _onAudioProcess;
+    private _onAudioProcess: EventListener;
 
-    private _onMessage;
+    private _onMessage: EventListener;
 
-    private _recordRequestPromise;
+    private _recordRequestPromiseResolve: null | Function;
 
     private _recordingId: number;
 
     private _recordingIds: Set<number>;
 
-    private _scriptProcessorNode;
+    private _scriptProcessorNode: ScriptProcessorNode;
 
     private _uniqueIdGeneratingService: UniqueIdGeneratingService;
 
@@ -27,12 +28,12 @@ export class WavRecorder {
 
     private _unrespondedRequests: Set<number>;
 
-    private _worker;
+    private _worker: Worker;
 
-    constructor ({ mediaStream, uniqueIdGeneratingService, unrespondedRequests, recordingIds, worker }) {
+    constructor ({ mediaStream, uniqueIdGeneratingService, unrespondedRequests, recordingIds, worker }: IWavRecorderOptions) {
         this._audioContext = new AudioContext();
         this._worker = worker;
-        this._recordRequestPromise = null;
+        this._recordRequestPromiseResolve = null;
         this._recordingId = uniqueIdGeneratingService.generateAndAdd(recordingIds);
         this._recordingIds = recordingIds;
         this._uniqueIdGeneratingService = uniqueIdGeneratingService;
@@ -52,7 +53,7 @@ export class WavRecorder {
             .connect(gainNode)
             .connect(this._audioContext.destination);
 
-        this._onAudioProcess = ({ inputBuffer }) => {
+        this._onAudioProcess = ({ inputBuffer }: AudioProcessingEvent) => {
             const typedArrays = [];
 
             const length = inputBuffer.numberOfChannels;
@@ -73,7 +74,7 @@ export class WavRecorder {
             }, typedArrays.map(({ buffer }) => buffer));
         };
 
-        this._onMessage = ({ data }) => {
+        this._onMessage = ({ data }: IWorkerEvent) => {
             const { id } = data;
 
             if (this._unrespondedRecordingRequests.has(id)) {
@@ -84,12 +85,10 @@ export class WavRecorder {
                 this._unrespondedRequests.delete(id);
             }
 
-            if (this._unrespondedRecordingRequests.size === 0 && this._recordRequestPromise !== null) {
-                const { reject, resolve } = this._recordRequestPromise;
+            if (this._unrespondedRecordingRequests.size === 0 && this._recordRequestPromiseResolve !== null) {
+                this._requestRecording(this._recordRequestPromiseResolve);
 
-                this._requestRecording(resolve, reject);
-
-                this._recordRequestPromise = null;
+                this._recordRequestPromiseResolve = null;
             }
         };
 
@@ -97,19 +96,23 @@ export class WavRecorder {
         this._worker.addEventListener('message', this._onMessage);
     }
 
-    private _requestRecording (resolve, reject) {
-        const onMessage = ({ data }) => {
-            resolve(data.arrayBuffer);
+    private _requestRecording (resolve: Function) {
+        const id = this._uniqueIdGeneratingService.generateAndAdd(this._unrespondedRequests);
 
-            this._recordingIds.delete(this._recordingId);
+        const onMessage = ({ data }: IWorkerEvent) => {
+            if (data.id === id) {
+                const { result: { arrayBuffer } } = <IEncodeResponse> data;
 
-            this._worker.removeEventListener('message', onMessage);
+                this._recordingIds.delete(this._recordingId);
+
+                this._worker.removeEventListener('message', onMessage);
+
+                resolve(arrayBuffer);
+            }
         };
 
         this._worker.addEventListener('message', onMessage);
         this._worker.removeEventListener('message', this._onMessage);
-
-        const id = this._uniqueIdGeneratingService.generateAndAdd(this._unrespondedRequests);
 
         this._worker.postMessage(<IEncodeRequest> {
             id,
@@ -122,11 +125,11 @@ export class WavRecorder {
         this._scriptProcessorNode.removeEventListener('audioprocess', this._onAudioProcess);
         this._audioContext.close();
 
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
             if (this._unrespondedRecordingRequests.size === 0) {
-                this._requestRecording(resolve, reject);
+                this._requestRecording(resolve);
             } else {
-                this._recordRequestPromise = { reject, resolve };
+                this._recordRequestPromiseResolve = resolve;
             }
         });
     }
@@ -149,15 +152,15 @@ export class WavRecorderFactory {
     };
 
     constructor (
-        @Inject(recordingIds) recordingIds,
+        @Inject(recordingIds) recordingIds: Set<number>,
         uniqueIdGeneratingService: UniqueIdGeneratingService,
-        @Inject(unrespondedRequests) unrespondedRequests,
-        @Inject(worker) worker
+        @Inject(unrespondedRequests) unrespondedRequests: Set<number>,
+        @Inject(worker) worker: Worker
     ) {
         this._options = { recordingIds, uniqueIdGeneratingService, unrespondedRequests, worker };
     }
 
-    public create ({ mediaStream }) {
+    public create ({ mediaStream }: IWavRecorderFactoryOptions) {
         return new WavRecorder({ ...this._options, mediaStream });
     }
 
