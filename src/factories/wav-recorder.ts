@@ -104,6 +104,19 @@ export class WavRecorder {
         this._worker.addEventListener('message', this._onMessage);
     }
 
+    public stop (): Promise<ArrayBuffer> {
+        this._scriptProcessorNode.removeEventListener('audioprocess', this._onAudioProcess);
+        this._audioContext.close();
+
+        return new Promise((resolve, reject) => {
+            if (this._unrespondedRecordingRequests.size === 0) {
+                this._requestRecording(resolve, reject);
+            } else {
+                this._recordRequestPromise = { reject, resolve };
+            }
+        });
+    }
+
     private _requestRecording (resolve: Function, reject: Function) {
         const id = this._uniqueIdGeneratingService.generateAndAdd(this._unrespondedRequests);
 
@@ -132,19 +145,6 @@ export class WavRecorder {
             id,
             method: 'encode',
             params: { recordingId: this._recordingId }
-        });
-    }
-
-    public stop (): Promise<ArrayBuffer> {
-        this._scriptProcessorNode.removeEventListener('audioprocess', this._onAudioProcess);
-        this._audioContext.close();
-
-        return new Promise((resolve, reject) => {
-            if (this._unrespondedRecordingRequests.size === 0) {
-                this._requestRecording(resolve, reject);
-            } else {
-                this._recordRequestPromise = { reject, resolve };
-            }
         });
     }
 
