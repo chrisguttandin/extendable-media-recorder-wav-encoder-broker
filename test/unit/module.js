@@ -5,11 +5,11 @@ describe('module', () => {
     let wavEncoderFactory;
 
     beforeEach(() => {
-        const blob = new Blob([`
-            self.addEventListener('message', ({ data }) => {
+        const blob = new Blob([
+            `self.addEventListener('message', ({ data }) => {
                 self.postMessage(data);
-            });
-        `], { type: 'application/javascript' });
+            });`
+        ], { type: 'application/javascript' });
 
         wavEncoderFactory = load(URL.createObjectURL(blob));
     });
