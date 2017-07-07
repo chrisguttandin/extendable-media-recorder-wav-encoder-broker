@@ -36,15 +36,21 @@ export class WavRecorder {
 
     private _worker: Worker;
 
-    constructor ({ mediaStream, uniqueIdGeneratingService, unrespondedRequests, recordingIds, worker }: IWavRecorderOptions) {
+    constructor ({
+        mediaStream,
+        uniqueIdGeneratingService,
+        unrespondedRequests: nrspnddRqusts,
+        recordingIds: rcrdngDs,
+        worker: wrkr
+    }: IWavRecorderOptions) {
         this._audioContext = new AudioContext();
-        this._worker = worker;
+        this._worker = wrkr;
         this._recordRequestPromise = null;
-        this._recordingId = uniqueIdGeneratingService.generateAndAdd(recordingIds);
-        this._recordingIds = recordingIds;
+        this._recordingId = uniqueIdGeneratingService.generateAndAdd(rcrdngDs);
+        this._recordingIds = rcrdngDs;
         this._uniqueIdGeneratingService = uniqueIdGeneratingService;
         this._unrespondedRecordingRequests = new Set();
-        this._unrespondedRequests = unrespondedRequests;
+        this._unrespondedRequests = nrspnddRqusts;
 
         const mediaStreamAudioSourceNode = this._audioContext.createMediaStreamSource(mediaStream);
 
@@ -69,11 +75,11 @@ export class WavRecorder {
                 typedArrays.push(inputBuffer.getChannelData(i).slice(0));
             }
 
-            const id = uniqueIdGeneratingService.generateAndAdd(unrespondedRequests);
+            const id = uniqueIdGeneratingService.generateAndAdd(nrspnddRqusts);
 
             this._unrespondedRecordingRequests.add(id);
 
-            worker.postMessage(<IRecordRequest> {
+            wrkr.postMessage(<IRecordRequest> {
                 id,
                 method: 'record',
                 params: { recordingId: this._recordingId, typedArrays }
@@ -166,12 +172,12 @@ export class WavRecorderFactory {
     };
 
     constructor (
-        @Inject(recordingIds) recordingIds: Set<number>,
+        @Inject(recordingIds) rcrdngDs: Set<number>,
         uniqueIdGeneratingService: UniqueIdGeneratingService,
-        @Inject(unrespondedRequests) unrespondedRequests: Set<number>,
-        @Inject(worker) worker: Worker
+        @Inject(unrespondedRequests) nrspnddRqusts: Set<number>,
+        @Inject(worker) wrkr: Worker
     ) {
-        this._options = { recordingIds, uniqueIdGeneratingService, unrespondedRequests, worker };
+        this._options = { recordingIds: rcrdngDs, uniqueIdGeneratingService, unrespondedRequests: nrspnddRqusts, worker: wrkr };
     }
 
     public create ({ mediaStream }: IWavRecorderFactoryOptions) {
