@@ -7,7 +7,7 @@
     "@angular/core": "^4.3.4",
     "core-js": "^2.5.0",
     "extendable-media-recorder-wav-encoder-worker": "^2.0.2",
-    "rxjs": "^5.4.2",
+    "rxjs": "^5.4.3",
     "zone.js": "^0.8.16"
   },
   "description": "The broker which is used by the extendable-media-recorder-wav-encoder package.",
