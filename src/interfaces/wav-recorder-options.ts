@@ -1,5 +1,5 @@
 import { UniqueIdGeneratingService } from '../services/unique-id-generating';
-import { IWavRecorderFactoryOptions } from './wav-recorder-factory-options';
+import { IWavRecorderFactoryOptions } from './wav-recorder-factory-options';
 
 export interface IWavRecorderOptions extends IWavRecorderFactoryOptions {
 

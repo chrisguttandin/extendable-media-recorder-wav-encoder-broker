@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { IWavEncoderOptions } from '../interfaces';
+import { IWavEncoderOptions } from '../interfaces';
 import { WavRecorder, WavRecorderFactory } from './wav-recorder';
 
 export class WavEncoder {

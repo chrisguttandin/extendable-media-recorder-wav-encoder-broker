@@ -6,11 +6,11 @@ import {
     IRecordRequest,
     IWorkerEvent
 } from 'extendable-media-recorder-wav-encoder-worker';
-import { IWavRecorderFactoryOptions, IWavRecorderOptions } from '../interfaces';
-import { recordingIds } from '../providers/recording-ids';
-import { unrespondedRequests } from '../providers/unresponded-requests';
+import { IWavRecorderFactoryOptions, IWavRecorderOptions } from '../interfaces';
+import { recordingIds } from '../providers/recording-ids';
+import { unrespondedRequests } from '../providers/unresponded-requests';
 import { worker } from '../providers/worker';
-import { UniqueIdGeneratingService } from '../services/unique-id-generating';
+import { UniqueIdGeneratingService } from '../services/unique-id-generating';
 
 export class WavRecorder {
 
@@ -20,7 +20,7 @@ export class WavRecorder {
 
     private _onMessage: EventListener;
 
-    private _recordRequestPromise: null | { reject: Function, resolve: Function };
+    private _recordRequestPromise: null | { reject: Function, resolve: Function };
 
     private _recordingId: number;
 
@@ -82,7 +82,7 @@ export class WavRecorder {
             wrkr.postMessage(<IRecordRequest> {
                 id,
                 method: 'record',
-                params: { recordingId: this._recordingId, typedArrays }
+                params: { recordingId: this._recordingId, typedArrays }
             }, typedArrays.map(({ buffer }) => buffer));
         };
 
@@ -98,7 +98,7 @@ export class WavRecorder {
             }
 
             if (this._unrespondedRecordingRequests.size === 0 && this._recordRequestPromise !== null) {
-                const { reject, resolve } = this._recordRequestPromise;
+                const { reject, resolve } = this._recordRequestPromise;
 
                 this._requestRecording(resolve, reject);
 
@@ -150,7 +150,7 @@ export class WavRecorder {
         this._worker.postMessage(<IEncodeRequest> {
             id,
             method: 'encode',
-            params: { recordingId: this._recordingId }
+            params: { recordingId: this._recordingId }
         });
     }
 
