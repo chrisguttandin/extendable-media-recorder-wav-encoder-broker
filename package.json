@@ -8,7 +8,7 @@
     "babel-runtime": "^6.26.0",
     "core-js": "^2.5.1",
     "extendable-media-recorder-wav-encoder-worker": "^2.0.7",
-    "rxjs": "^5.4.3",
+    "rxjs": "^5.5.0",
     "tslib": "^1.8.0",
     "zone.js": "^0.8.18"
   },
