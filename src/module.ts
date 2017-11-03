@@ -9,9 +9,9 @@ import { UniqueIdGeneratingService } from './services/unique-id-generating';
 
 export const load = (url: string) => {
     const injector = ReflectiveInjector.resolveAndCreate([
-        { provide: recordingIds, useValue: new Set() },
+        { provide: recordingIds, useValue: new Set<number>() },
         UniqueIdGeneratingService,
-        { provide: unrespondedRequests, useValue: new Set() },
+        { provide: unrespondedRequests, useValue: new Set<number>() },
         WavEncoderFactory,
         WavRecorderFactory,
         { provide: worker, useValue: new Worker(url) }

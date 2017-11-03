@@ -1,3 +1,3 @@
-import { OpaqueToken } from '@angular/core';
+import { InjectionToken } from '@angular/core';
 
-export const recordingIds = new OpaqueToken('RECORDING_IDS');
+export const recordingIds = new InjectionToken<Set<number>>('RECORDING_IDS');
