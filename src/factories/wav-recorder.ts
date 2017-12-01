@@ -6,11 +6,11 @@ import {
     IRecordRequest,
     IWorkerEvent
 } from 'extendable-media-recorder-wav-encoder-worker';
+import { addUniqueNumber } from 'fast-unique-numbers';
 import { IWavRecorderFactoryOptions, IWavRecorderOptions } from '../interfaces';
 import { recordingIds } from '../providers/recording-ids';
 import { unrespondedRequests } from '../providers/unresponded-requests';
 import { worker } from '../providers/worker';
-import { UniqueIdGeneratingService } from '../services/unique-id-generating';
 
 export class WavRecorder {
 
@@ -28,8 +28,6 @@ export class WavRecorder {
 
     private _scriptProcessorNode: ScriptProcessorNode;
 
-    private _uniqueIdGeneratingService: UniqueIdGeneratingService;
-
     private _unrespondedRecordingRequests: Set<number>;
 
     private _unrespondedRequests: Set<number>;
@@ -38,7 +36,6 @@ export class WavRecorder {
 
     constructor ({
         mediaStream,
-        uniqueIdGeneratingService,
         unrespondedRequests: nrspnddRqusts,
         recordingIds: rcrdngDs,
         worker: wrkr
@@ -46,9 +43,8 @@ export class WavRecorder {
         this._audioContext = new AudioContext();
         this._worker = wrkr;
         this._recordRequestPromise = null;
-        this._recordingId = uniqueIdGeneratingService.generateAndAdd(rcrdngDs);
+        this._recordingId = addUniqueNumber(rcrdngDs);
         this._recordingIds = rcrdngDs;
-        this._uniqueIdGeneratingService = uniqueIdGeneratingService;
         this._unrespondedRecordingRequests = new Set();
         this._unrespondedRequests = nrspnddRqusts;
 
@@ -75,7 +71,7 @@ export class WavRecorder {
                 typedArrays.push(inputBuffer.getChannelData(i).slice(0));
             }
 
-            const id = uniqueIdGeneratingService.generateAndAdd(nrspnddRqusts);
+            const id = addUniqueNumber(nrspnddRqusts);
 
             this._unrespondedRecordingRequests.add(id);
 
@@ -124,7 +120,7 @@ export class WavRecorder {
     }
 
     private _requestRecording (resolve: Function, reject: Function) {
-        const id = this._uniqueIdGeneratingService.generateAndAdd(this._unrespondedRequests);
+        const id = addUniqueNumber(this._unrespondedRequests);
 
         const onMessage = ({ data }: IWorkerEvent) => {
             if (data.id === id) {
@@ -163,8 +159,6 @@ export class WavRecorderFactory {
 
         recordingIds: Set<number>;
 
-        uniqueIdGeneratingService: UniqueIdGeneratingService;
-
         unrespondedRequests: Set<number>;
 
         worker: Worker;
@@ -173,11 +167,10 @@ export class WavRecorderFactory {
 
     constructor (
         @Inject(recordingIds) rcrdngDs: Set<number>,
-        uniqueIdGeneratingService: UniqueIdGeneratingService,
         @Inject(unrespondedRequests) nrspnddRqusts: Set<number>,
         @Inject(worker) wrkr: Worker
     ) {
-        this._options = { recordingIds: rcrdngDs, uniqueIdGeneratingService, unrespondedRequests: nrspnddRqusts, worker: wrkr };
+        this._options = { recordingIds: rcrdngDs, unrespondedRequests: nrspnddRqusts, worker: wrkr };
     }
 
     public create ({ mediaStream }: IWavRecorderFactoryOptions) {
