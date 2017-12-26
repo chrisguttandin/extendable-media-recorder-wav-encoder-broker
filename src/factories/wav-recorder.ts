@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@angular/core';
+import { Inject, Injectable, InjectionToken } from '@angular/core';
 import {
     IEncodeRequest,
     IEncodeResponse,
@@ -178,3 +178,8 @@ export class WavRecorderFactory {
     }
 
 }
+
+export const WAV_RECODER_FACTORY_PROVIDER = {
+    deps: [ <InjectionToken<Set<number>>> recordingIds, unrespondedRequests, worker ],
+    provide: WavRecorderFactory
+};

@@ -38,3 +38,5 @@ export class WavEncoderFactory {
     }
 
 }
+
+export const WAV_ENCODER_FACTORY_PROVIDER = { deps: [ WavRecorderFactory ], provide: WavEncoderFactory };
