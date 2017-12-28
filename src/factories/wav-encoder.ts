@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import { IWavEncoderOptions } from '../interfaces';
-import { WavRecorder, WavRecorderFactory } from './wav-recorder';
+import { IWavEncoder, IWavEncoderOptions, IWavRecorder } from '../interfaces';
+import { WavRecorderFactory } from './wav-recorder';
 
-export class WavEncoder {
+export class WavEncoder implements IWavEncoder {
 
     private _wavRecorderFactory: WavRecorderFactory;
 
@@ -18,7 +18,7 @@ export class WavEncoder {
         return false;
     }
 
-    public start (mediaStream: MediaStream): WavRecorder {
+    public start (mediaStream: MediaStream): IWavRecorder {
         return this._wavRecorderFactory.create({ mediaStream });
     }
 
@@ -33,7 +33,7 @@ export class WavEncoderFactory {
         this._wavRecorderFactory = wavRecorderFactory;
     }
 
-    public create () {
+    public create (): IWavEncoder {
         return new WavEncoder({ wavRecorderFactory: this._wavRecorderFactory });
     }
 

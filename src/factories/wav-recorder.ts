@@ -7,12 +7,12 @@ import {
     IWorkerEvent
 } from 'extendable-media-recorder-wav-encoder-worker';
 import { addUniqueNumber } from 'fast-unique-numbers';
-import { IWavRecorderFactoryOptions, IWavRecorderOptions } from '../interfaces';
+import { IWavRecorder, IWavRecorderFactoryOptions, IWavRecorderOptions } from '../interfaces';
 import { recordingIds } from '../providers/recording-ids';
 import { unrespondedRequests } from '../providers/unresponded-requests';
 import { worker } from '../providers/worker';
 
-export class WavRecorder {
+export class WavRecorder implements IWavRecorder {
 
     private _audioContext: AudioContext;
 
@@ -173,7 +173,7 @@ export class WavRecorderFactory {
         this._options = { recordingIds: rcrdngDs, unrespondedRequests: nrspnddRqusts, worker: wrkr };
     }
 
-    public create ({ mediaStream }: IWavRecorderFactoryOptions) {
+    public create ({ mediaStream }: IWavRecorderFactoryOptions): IWavRecorder {
         return new WavRecorder({ ...this._options, mediaStream });
     }
 
