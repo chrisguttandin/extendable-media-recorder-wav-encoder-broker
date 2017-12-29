@@ -1,5 +1,4 @@
-import 'core-js/es7/reflect'; // tslint:disable-line:ordered-imports
-import { Injector } from '@angular/core'; // tslint:disable-line:ordered-imports
+import { Injector } from '@angular/core';
 import { WAV_ENCODER_FACTORY_PROVIDER, WavEncoderFactory } from './factories/wav-encoder';
 import { WAV_RECODER_FACTORY_PROVIDER } from './factories/wav-recorder';
 import { IWavEncoder } from './interfaces';
