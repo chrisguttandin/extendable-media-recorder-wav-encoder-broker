@@ -68,7 +68,9 @@ export class WavRecorder implements IWavRecorder {
 
             for (let i = 0; i < length; i += 1) {
                 // @todo Check if slicing the array is really necessary.
-                typedArrays.push(inputBuffer.getChannelData(i).slice(0));
+                typedArrays.push(inputBuffer
+                    .getChannelData(i)
+                    .slice(0));
             }
 
             const id = addUniqueNumber(nrspnddRqusts);
