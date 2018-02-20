@@ -19,7 +19,7 @@ export const load = (url: string): IWavEncoder => {
         ]
     });
 
-    const wavEncoderFactory = injector.get(WavEncoderFactory);
+    const wavEncoderFactory = injector.get<WavEncoderFactory>(WavEncoderFactory);
 
     return wavEncoderFactory.create();
 };
