@@ -61,7 +61,7 @@ export class WavRecorder implements IWavRecorder {
             .connect(gainNode)
             .connect(this._audioContext.destination);
 
-        this._onAudioProcess = ({ inputBuffer }: AudioProcessingEvent) => {
+        this._onAudioProcess = <EventListener> (({ inputBuffer }: AudioProcessingEvent) => {
             const typedArrays = [];
 
             const length = inputBuffer.numberOfChannels;
@@ -82,9 +82,9 @@ export class WavRecorder implements IWavRecorder {
                 method: 'record',
                 params: { recordingId: this._recordingId, typedArrays }
             }, typedArrays.map(({ buffer }) => buffer));
-        };
+        });
 
-        this._onMessage = ({ data }: IWorkerEvent) => {
+        this._onMessage = <EventListener> (({ data }: IWorkerEvent) => {
             const { id } = data;
 
             if (this._unrespondedRecordingRequests.has(id)) {
@@ -102,7 +102,7 @@ export class WavRecorder implements IWavRecorder {
 
                 this._recordRequestPromise = null;
             }
-        };
+        });
 
         this._scriptProcessorNode.addEventListener('audioprocess', this._onAudioProcess);
         this._worker.addEventListener('message', this._onMessage);
