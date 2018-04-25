@@ -1,15 +1,32 @@
-import { createWavEncoder } from './factories/wav-encoder';
-import { createWavRecorderFactory } from './factories/wav-recorder-factory';
-import { IWavEncoder } from './interfaces';
+import { createBroker } from 'broker-factory';
+import { TExtendableMediaRecorderWavEncoderWorkerDefinition } from 'extendable-media-recorder-wav-encoder-worker';
+import { IExtendableMediaRecorderWavEncoderBrokerDefinition } from './interfaces';
+import { TExtendableMediaRecorderWavEncoderBrokerLoader, TExtendableMediaRecorderWavEncoderBrokerWrapper } from './types';
 
 export * from './interfaces';
 export * from './types';
 
-export const load = (url: string): IWavEncoder => {
-    const recordingIds: Set<number> = new Set();
-    const unrespondedRequests: Set<number> = new Set();
-    const worker = new Worker(url);
-    const createWavRecoder = createWavRecorderFactory(recordingIds, unrespondedRequests, worker);
+export const wrap: TExtendableMediaRecorderWavEncoderBrokerWrapper = createBroker<
+    IExtendableMediaRecorderWavEncoderBrokerDefinition,
+    TExtendableMediaRecorderWavEncoderWorkerDefinition
+>({
+    characterize: ({ call }) => {
+        return () => call('characterize', { });
+    },
+    encode: ({ call }) => {
+        return (recordingId) => {
+            return call('encode', { recordingId });
+        };
+    },
+    record: ({ call }) => {
+        return async (recordingId, typedArrays) => {
+            await call('record', { recordingId, typedArrays }, typedArrays.map(({ buffer }) => <ArrayBuffer> buffer));
+        };
+    }
+});
 
-    return createWavEncoder(createWavRecoder);
+export const load: TExtendableMediaRecorderWavEncoderBrokerLoader = (url: string) => {
+    const worker = new Worker(url);
+
+    return wrap(worker);
 };

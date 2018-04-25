@@ -1,2 +1,1 @@
-export * from './wav-encoder';
-export * from './wav-recorder';
+export * from './extendable-media-recorder-wav-encoder-broker-definition';

@@ -1,3 +1,2 @@
-export * from './wav-encoder-factory';
-export * from './wav-recorder-factory';
-export * from './wav-recorder-factory-factory';
+export * from './extendable-media-recorder-wav-encoder-broker-loader';
+export * from './extendable-media-recorder-wav-encoder-broker-wrapper';
