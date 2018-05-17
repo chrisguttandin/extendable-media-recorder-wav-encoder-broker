@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "babel-runtime": "^6.26.0",
-    "broker-factory": "^1.2.21",
+    "broker-factory": "^1.2.22",
     "extendable-media-recorder-wav-encoder-worker": "^3.0.3",
     "tslib": "^1.9.1"
   },
