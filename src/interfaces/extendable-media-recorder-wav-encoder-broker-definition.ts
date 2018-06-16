@@ -1,5 +1,5 @@
 import { IBrokerDefinition } from 'broker-factory';
-import { TTypedArray } from 'extendable-media-recorder-wav-encoder-worker';
+import { TTypedArray } from '../types';
 
 export interface IExtendableMediaRecorderWavEncoderBrokerDefinition extends IBrokerDefinition {
 
