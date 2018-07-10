@@ -11,7 +11,7 @@ export const wrap: TExtendableMediaRecorderWavEncoderBrokerWrapper = createBroke
     TExtendableMediaRecorderWavEncoderWorkerDefinition
 >({
     characterize: ({ call }) => {
-        return () => call('characterize', { });
+        return () => call('characterize');
     },
     encode: ({ call }) => {
         return (recordingId) => {

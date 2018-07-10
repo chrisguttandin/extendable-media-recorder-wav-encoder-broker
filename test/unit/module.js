@@ -82,8 +82,7 @@ describe('module', () => {
 
                     expect(data).to.deep.equal({
                         id: data.id,
-                        method: 'characterize',
-                        params: { }
+                        method: 'characterize'
                     });
 
                     done();
