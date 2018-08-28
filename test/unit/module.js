@@ -70,6 +70,8 @@ describe('module', () => {
 
                 extendableMediaRecorderWavEncoder = wrap(worker);
             }
+
+            URL.revokeObjectURL(url);
         });
 
         describe('characterize()', () => {
