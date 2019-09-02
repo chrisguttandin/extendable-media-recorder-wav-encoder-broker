@@ -5,7 +5,7 @@ export interface IExtendableMediaRecorderWavEncoderBrokerDefinition extends IBro
 
     characterize (): Promise<RegExp>;
 
-    encode (recordingId: number): Promise<ArrayBuffer[]>;
+    encode (recordingId: number, timeslice: null | number): Promise<ArrayBuffer[]>;
 
     record (recordingId: number, typedArrays: TTypedArray[]): Promise<void>; // tslint:disable-line:invalid-void
 

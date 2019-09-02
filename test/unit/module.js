@@ -98,9 +98,11 @@ describe('module', () => {
         describe('encode()', () => {
 
             let recordingId;
+            let timeslice;
 
             beforeEach(() => {
                 recordingId = 142;
+                timeslice = 200;
             });
 
             it('should send the correct message', function (done) {
@@ -112,13 +114,13 @@ describe('module', () => {
                     expect(data).to.deep.equal({
                         id: data.id,
                         method: 'encode',
-                        params: { recordingId }
+                        params: { recordingId, timeslice }
                     });
 
                     done();
                 });
 
-                extendableMediaRecorderWavEncoder.encode(recordingId);
+                extendableMediaRecorderWavEncoder.encode(recordingId, timeslice);
             });
 
         });

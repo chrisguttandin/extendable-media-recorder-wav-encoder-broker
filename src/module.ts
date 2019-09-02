@@ -14,8 +14,8 @@ export const wrap: TExtendableMediaRecorderWavEncoderBrokerWrapper = createBroke
         return () => call('characterize');
     },
     encode: ({ call }) => {
-        return (recordingId) => {
-            return call('encode', { recordingId });
+        return (recordingId, timeslice) => {
+            return call('encode', { recordingId, timeslice });
         };
     },
     record: ({ call }) => {
