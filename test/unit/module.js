@@ -128,10 +128,12 @@ describe('module', () => {
         describe('record()', () => {
 
             let recordingId;
+            let sampleRate;
             let typedArrays;
 
             beforeEach(() => {
                 recordingId = 142;
+                sampleRate = 44100;
                 typedArrays = [ new Float32Array(128), new Float32Array(128) ];
             });
 
@@ -152,6 +154,7 @@ describe('module', () => {
                         method: 'record',
                         params: {
                             recordingId,
+                            sampleRate,
                             typedArrays: data.params.typedArrays
                         }
                     });
@@ -159,7 +162,7 @@ describe('module', () => {
                     done();
                 });
 
-                extendableMediaRecorderWavEncoder.record(recordingId, typedArrays);
+                extendableMediaRecorderWavEncoder.record(recordingId, sampleRate, typedArrays);
             });
 
         });

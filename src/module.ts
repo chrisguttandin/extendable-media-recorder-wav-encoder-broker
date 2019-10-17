@@ -19,8 +19,8 @@ export const wrap: TExtendableMediaRecorderWavEncoderBrokerWrapper = createBroke
         };
     },
     record: ({ call }) => {
-        return async (recordingId, typedArrays) => {
-            await call('record', { recordingId, typedArrays }, typedArrays.map(({ buffer }) => <ArrayBuffer> buffer));
+        return async (recordingId, sampleRate, typedArrays) => {
+            await call('record', { recordingId, sampleRate, typedArrays }, typedArrays.map(({ buffer }) => <ArrayBuffer> buffer));
         };
     }
 });
