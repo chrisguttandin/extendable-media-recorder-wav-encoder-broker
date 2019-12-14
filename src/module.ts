@@ -3,8 +3,12 @@ import { TExtendableMediaRecorderWavEncoderWorkerDefinition } from 'extendable-m
 import { IExtendableMediaRecorderWavEncoderBrokerDefinition } from './interfaces';
 import { TExtendableMediaRecorderWavEncoderBrokerLoader, TExtendableMediaRecorderWavEncoderBrokerWrapper } from './types';
 
-export * from './interfaces';
-export * from './types';
+/*
+ * @todo Explicitly referencing the barrel file seems to be necessary when enabling the
+ * isolatedModules compiler option.
+ */
+export * from './interfaces/index';
+export * from './types/index';
 
 export const wrap: TExtendableMediaRecorderWavEncoderBrokerWrapper = createBroker<
     IExtendableMediaRecorderWavEncoderBrokerDefinition,
