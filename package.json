@@ -11,7 +11,7 @@
     "dependencies": {
         "@babel/runtime": "^7.10.5",
         "broker-factory": "^3.0.17",
-        "extendable-media-recorder-wav-encoder-worker": "^8.0.15",
+        "extendable-media-recorder-wav-encoder-worker": "^8.0.16",
         "tslib": "^2.0.0"
     },
     "description": "The broker which is used by the extendable-media-recorder-wav-encoder package.",
