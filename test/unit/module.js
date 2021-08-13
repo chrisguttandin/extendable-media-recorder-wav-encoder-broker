@@ -76,9 +76,7 @@ describe('module', () => {
         });
 
         describe('characterize()', () => {
-            it('should send the correct message', function (done) {
-                this.timeout(6000);
-
+            it('should send the correct message', (done) => {
                 Worker.addEventListener(0, 'message', ({ data }) => {
                     expect(data.id).to.be.a('number');
 
@@ -103,9 +101,7 @@ describe('module', () => {
                 timeslice = 200;
             });
 
-            it('should send the correct message', function (done) {
-                this.timeout(6000);
-
+            it('should send the correct message', (done) => {
                 Worker.addEventListener(0, 'message', ({ data }) => {
                     expect(data.id).to.be.a('number');
 
@@ -133,9 +129,7 @@ describe('module', () => {
                 typedArrays = [new Float32Array(128), new Float32Array(128)];
             });
 
-            it('should send the correct message', function (done) {
-                this.timeout(6000);
-
+            it('should send the correct message', (done) => {
                 Worker.addEventListener(0, 'message', ({ data }) => {
                     expect(data.id).to.be.a('number');
 
