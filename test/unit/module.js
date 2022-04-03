@@ -63,13 +63,15 @@ describe('module', () => {
     for (const method of ['loaded', 'wrapped']) {
         describe(`with a ${method} worker`, () => {
             let extendableMediaRecorderWavEncoder;
+            let worker;
+
+            afterEach(() => worker?.terminate());
 
             beforeEach(() => {
                 if (method === 'loaded') {
                     extendableMediaRecorderWavEncoder = load(url);
                 } else {
-                    const worker = new Worker(url);
-
+                    worker = new Worker(url);
                     extendableMediaRecorderWavEncoder = wrap(worker);
                 }
 
