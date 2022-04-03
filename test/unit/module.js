@@ -60,100 +60,102 @@ describe('module', () => {
         url = URL.createObjectURL(blob);
     });
 
-    leche.withData(['loaded', 'wrapped'], (method) => {
-        let extendableMediaRecorderWavEncoder;
-
-        beforeEach(() => {
-            if (method === 'loaded') {
-                extendableMediaRecorderWavEncoder = load(url);
-            } else {
-                const worker = new Worker(url);
-
-                extendableMediaRecorderWavEncoder = wrap(worker);
-            }
-
-            URL.revokeObjectURL(url);
-        });
-
-        describe('characterize()', () => {
-            it('should send the correct message', (done) => {
-                Worker.addEventListener(0, 'message', ({ data }) => {
-                    expect(data.id).to.be.a('number');
-
-                    expect(data).to.deep.equal({
-                        id: data.id,
-                        method: 'characterize'
-                    });
-
-                    done();
-                });
-
-                extendableMediaRecorderWavEncoder.characterize();
-            });
-        });
-
-        describe('encode()', () => {
-            let recordingId;
-            let timeslice;
+    for (const method of ['loaded', 'wrapped']) {
+        describe(`with a ${method} worker`, () => {
+            let extendableMediaRecorderWavEncoder;
 
             beforeEach(() => {
-                recordingId = 142;
-                timeslice = 200;
+                if (method === 'loaded') {
+                    extendableMediaRecorderWavEncoder = load(url);
+                } else {
+                    const worker = new Worker(url);
+
+                    extendableMediaRecorderWavEncoder = wrap(worker);
+                }
+
+                URL.revokeObjectURL(url);
             });
 
-            it('should send the correct message', (done) => {
-                Worker.addEventListener(0, 'message', ({ data }) => {
-                    expect(data.id).to.be.a('number');
+            describe('characterize()', () => {
+                it('should send the correct message', (done) => {
+                    Worker.addEventListener(0, 'message', ({ data }) => {
+                        expect(data.id).to.be.a('number');
 
-                    expect(data).to.deep.equal({
-                        id: data.id,
-                        method: 'encode',
-                        params: { recordingId, timeslice }
+                        expect(data).to.deep.equal({
+                            id: data.id,
+                            method: 'characterize'
+                        });
+
+                        done();
                     });
 
-                    done();
+                    extendableMediaRecorderWavEncoder.characterize();
+                });
+            });
+
+            describe('encode()', () => {
+                let recordingId;
+                let timeslice;
+
+                beforeEach(() => {
+                    recordingId = 142;
+                    timeslice = 200;
                 });
 
-                extendableMediaRecorderWavEncoder.encode(recordingId, timeslice);
-            });
-        });
+                it('should send the correct message', (done) => {
+                    Worker.addEventListener(0, 'message', ({ data }) => {
+                        expect(data.id).to.be.a('number');
 
-        describe('record()', () => {
-            let recordingId;
-            let sampleRate;
-            let typedArrays;
+                        expect(data).to.deep.equal({
+                            id: data.id,
+                            method: 'encode',
+                            params: { recordingId, timeslice }
+                        });
 
-            beforeEach(() => {
-                recordingId = 142;
-                sampleRate = 44100;
-                typedArrays = [new Float32Array(128), new Float32Array(128)];
-            });
-
-            it('should send the correct message', (done) => {
-                Worker.addEventListener(0, 'message', ({ data }) => {
-                    expect(data.id).to.be.a('number');
-
-                    expect(data.params.typedArrays.length).to.equal(2);
-                    expect(data.params.typedArrays[0]).to.be.an.instanceOf(Float32Array);
-                    expect(data.params.typedArrays[0].length).to.equal(128);
-                    expect(data.params.typedArrays[1]).to.be.an.instanceOf(Float32Array);
-                    expect(data.params.typedArrays[1].length).to.equal(128);
-
-                    expect(data).to.deep.equal({
-                        id: data.id,
-                        method: 'record',
-                        params: {
-                            recordingId,
-                            sampleRate,
-                            typedArrays: data.params.typedArrays
-                        }
+                        done();
                     });
 
-                    done();
+                    extendableMediaRecorderWavEncoder.encode(recordingId, timeslice);
+                });
+            });
+
+            describe('record()', () => {
+                let recordingId;
+                let sampleRate;
+                let typedArrays;
+
+                beforeEach(() => {
+                    recordingId = 142;
+                    sampleRate = 44100;
+                    typedArrays = [new Float32Array(128), new Float32Array(128)];
                 });
 
-                extendableMediaRecorderWavEncoder.record(recordingId, sampleRate, typedArrays);
+                it('should send the correct message', (done) => {
+                    Worker.addEventListener(0, 'message', ({ data }) => {
+                        expect(data.id).to.be.a('number');
+
+                        expect(data.params.typedArrays.length).to.equal(2);
+                        expect(data.params.typedArrays[0]).to.be.an.instanceOf(Float32Array);
+                        expect(data.params.typedArrays[0].length).to.equal(128);
+                        expect(data.params.typedArrays[1]).to.be.an.instanceOf(Float32Array);
+                        expect(data.params.typedArrays[1].length).to.equal(128);
+
+                        expect(data).to.deep.equal({
+                            id: data.id,
+                            method: 'record',
+                            params: {
+                                recordingId,
+                                sampleRate,
+                                typedArrays: data.params.typedArrays
+                            }
+                        });
+
+                        done();
+                    });
+
+                    extendableMediaRecorderWavEncoder.record(recordingId, sampleRate, typedArrays);
+                });
             });
         });
-    });
+    }
 });
