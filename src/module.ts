@@ -27,7 +27,7 @@ export const wrap: TExtendableMediaRecorderWavEncoderBrokerWrapper = createBroke
             await call(
                 'record',
                 { recordingId, sampleRate, typedArrays },
-                typedArrays.map(({ buffer }) => buffer)
+                typedArrays.map(({ buffer }) => buffer).filter((buffer) => buffer instanceof ArrayBuffer)
             );
         };
     }
