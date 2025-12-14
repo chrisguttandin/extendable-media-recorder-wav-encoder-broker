@@ -1,3 +1,4 @@
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { load, wrap } from '../../src/module';
 
 describe('module', () => {
@@ -79,7 +80,9 @@ describe('module', () => {
             });
 
             describe('characterize()', () => {
-                it('should send the correct message', (done) => {
+                it('should send the correct message', () => {
+                    const { promise, resolve } = Promise.withResolvers();
+
                     Worker.addEventListener(0, 'message', ({ data }) => {
                         expect(data.id).to.be.a('number');
 
@@ -88,10 +91,12 @@ describe('module', () => {
                             method: 'characterize'
                         });
 
-                        done();
+                        resolve();
                     });
 
                     extendableMediaRecorderWavEncoder.characterize();
+
+                    return promise;
                 });
             });
 
@@ -104,7 +109,9 @@ describe('module', () => {
                     timeslice = 200;
                 });
 
-                it('should send the correct message', (done) => {
+                it('should send the correct message', () => {
+                    const { promise, resolve } = Promise.withResolvers();
+
                     Worker.addEventListener(0, 'message', ({ data }) => {
                         expect(data.id).to.be.a('number');
 
@@ -114,10 +121,12 @@ describe('module', () => {
                             params: { recordingId, timeslice }
                         });
 
-                        done();
+                        resolve();
                     });
 
                     extendableMediaRecorderWavEncoder.encode(recordingId, timeslice);
+
+                    return promise;
                 });
             });
 
@@ -132,7 +141,9 @@ describe('module', () => {
                     typedArrays = [new Float32Array(128), new Float32Array(128)];
                 });
 
-                it('should send the correct message', (done) => {
+                it('should send the correct message', () => {
+                    const { promise, resolve } = Promise.withResolvers();
+
                     Worker.addEventListener(0, 'message', ({ data }) => {
                         expect(data.id).to.be.a('number');
 
@@ -152,10 +163,12 @@ describe('module', () => {
                             }
                         });
 
-                        done();
+                        resolve();
                     });
 
                     extendableMediaRecorderWavEncoder.record(recordingId, sampleRate, typedArrays);
+
+                    return promise;
                 });
             });
         });
